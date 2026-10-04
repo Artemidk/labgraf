@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#185fa5">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="График">
+<title>Построение графика для лабораторной работы</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f6f5f1;--card:#fff;--tx:#1d1d1b;--mut:#6b6a66;--bd:#d8d6cf;--ac:#185fa5}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1c1a;--card:#262624;--tx:#ecebe6;--mut:#a09f98;--bd:#3d3d3a;--ac:#6aa9e8}}
+:root[data-theme="dark"]{--bg:#1c1c1a;--card:#262624;--tx:#ecebe6;--mut:#a09f98;--bd:#3d3d3a;--ac:#6aa9e8}
+html{font-size:max(14px,.85vw);scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:1rem/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:none;margin:0;padding:.8rem;display:grid;gap:.9rem;align-items:start;grid-template-columns:minmax(15rem,19rem) minmax(0,1fr) minmax(20rem,28rem)}
+.col-l,.col-s,.col-g{min-width:0}.col-g{position:sticky;top:.6rem}.col-g .card,.col-l .card:last-child,.col-s .card:last-child{margin-bottom:0}
+@media(max-width:75rem){main{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}h1{order:-3}.tabs{order:-2}.col-g{grid-column:1/-1;order:-1;position:static}}
+@media(max-width:52rem){main{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:.8rem;padding:.9rem;margin-bottom:1rem}
+h1{font-size:1.3rem;margin:0 0 .6rem;grid-column:1/-1}h2{font-size:1rem;margin:0 0 .6rem}
+label{display:block;font-size:.87rem;color:var(--mut);margin-bottom:.5rem}
+input[type=text]{width:100%;box-sizing:border-box;padding:.4rem .5rem;border:1px solid var(--bd);border-radius:.4rem;background:var(--bg);color:var(--tx);font:inherit}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.tabs .sp{flex:1}.tw{overflow-x:auto}table{border-collapse:collapse;width:100%}
+th{font-size:.8rem;color:var(--mut);font-weight:500;text-align:left;padding:0 .2rem .25rem}
+td{padding:.12rem .2rem}td input{min-width:3rem}.num{color:var(--mut);font-size:.8rem;padding-right:.2rem}.act{display:flex;gap:.15rem;white-space:nowrap}.act button:disabled{opacity:.3;cursor:default}
+button{cursor:pointer;border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:.4rem;padding:.4rem .8rem;font:inherit}
+button.p{background:var(--ac);border-color:var(--ac);color:#fff}
+.del{padding:.2rem .4rem;color:var(--mut)}
+.modes{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem}
+.modes label{margin:0;display:flex;align-items:center;gap:.4rem;border:1px solid var(--bd);border-radius:999px;padding:.3rem .8rem;color:var(--tx);cursor:pointer}
+.modes input:checked+span{font-weight:600;color:var(--ac)}
+.modes input[type=range]{width:8rem}
+.paper{background:#fff;border-radius:.5rem;overflow:hidden;border:1px solid var(--bd)}
+svg{display:block;width:100%;height:auto;max-height:calc(100vh - 9.5rem)}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:.6rem}
+.res>div{border:1px solid var(--bd);border-radius:.5rem;padding:.6rem}
+.res b{display:block;margin-bottom:.25rem}.res small{color:var(--mut)}
+.msg{color:var(--mut);font-size:.87rem}
+.tabs{grid-column:1/-1;display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin-top:-.4rem}
+.tab{border-radius:999px;padding:.4rem .9rem}.tab.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.hint{font-size:.8rem;color:var(--mut);margin:-.1rem 0 .5rem}
+sup,sub{font-size:.75em;line-height:0}
+.chips,.sw{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.6rem}
+.chip{border-radius:999px;padding:.3rem .7rem;display:inline-flex;align-items:center;gap:.4rem}.chip.on{border-color:var(--ac);font-weight:600}
+.dot{width:.8rem;height:.8rem;border-radius:50%;display:inline-block}
+.swb{width:1.6rem;height:1.6rem;border-radius:50%;padding:0;border:2px solid var(--card)}.swb.on{outline:2px solid var(--tx)}
+textarea{width:100%;box-sizing:border-box;padding:.4rem .5rem;border:1px solid var(--bd);border-radius:.4rem;background:var(--bg);color:var(--tx);font:.8rem monospace}
+input[type=file]{font-size:.8rem;max-width:100%}
+.grp{border:1px solid var(--bd);border-radius:.7rem;padding:.55rem .7rem .3rem;margin-bottom:.7rem;background:rgba(127,127,127,.06)}
+.cap{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:.4rem;font-weight:600}
+.grp .modes{margin-bottom:.4rem}
+.modes label:has(input:checked){background:rgba(24,95,165,.16);border-color:var(--ac)}
+input[type=radio],input[type=checkbox],input[type=range]{accent-color:var(--ac)}
+.btnrow{display:flex;gap:.5rem;flex-wrap:wrap;margin:.2rem 0 .6rem}
+button.dng{color:#d64545;border-color:rgba(214,69,69,.5);background:transparent}
+.act .del:last-child{color:#d64545}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.6rem}.bar .modes{margin:0}
+.exp{display:flex;gap:.4rem}.exp button{font-weight:600}
+.calcb{margin-top:.5rem;font-size:.8rem;padding:.25rem .6rem}
+.calc{font-size:.8rem;line-height:1.65;margin-top:.5rem;border-top:1px dashed var(--bd);padding-top:.5rem;overflow-x:auto}
+.ct{font-size:.75rem;border-collapse:collapse;margin:.3rem 0;width:auto}.ct td,.ct th{border:1px solid var(--bd);padding:.1rem .4rem;text-align:right;color:var(--tx)}
+#paperBox p{margin:.25rem 0}.ok{color:#2e9d4f}.bad{color:#d64545}
+@media print{body{background:#fff}main{display:block}.no-print{display:none}.card{border:0}}
+</style></head><body>
+<main>
+<h1>Построение графика для лабораторной работы</h1>
+<div class="tabs no-print" id="tabs"></div>
+<section class="col-l no-print">
+ <div class="card"><h2>Оси и заголовок</h2>
+  <div class="row2"><label>Величина по x<input type="text" id="xn" placeholder="напр. U"></label><label>Единица x<input type="text" id="xu" placeholder="напр. В"></label>
+  <label>Величина по y<input type="text" id="yn" placeholder="напр. I"></label><label>Единица y<input type="text" id="yu" placeholder="напр. мА"></label></div>
+  <p class="hint">Степень: м^2, с^-1, 10^{-3}. Индекс: U_0, v_{max}. Корень: √x, √{L^2+1}, sqrt{x+1}.</p>
+  <label>Заголовок<input type="text" id="ttl" placeholder="Зависимость … от …"></label>
+  <label style="display:flex;gap:.5rem;align-items:center;margin:0"><input type="checkbox" id="zero"> Показать начало координат (0, 0)</label>
+  <label style="display:flex;gap:.5rem;align-items:center;margin:.5rem 0 0"><input type="checkbox" id="paper" checked> Размещение на миллиметровке (лист 28,5 × 20 см)</label>
+  <div class="grp" style="margin:.5rem 0 0"><div class="cap">Допустимые масштабы</div><div class="modes"><label><input type="radio" name="scl" value="gost"><span>Масштаб по ГОСТ</span></label><label><input type="radio" name="scl" value="ext" checked><span>Расширенный</span></label><label><input type="radio" name="scl" value="bad"><span>Нежелательный</span></label></div></div>
+  <div class="grp" style="margin:.7rem 0 .6rem"><div class="cap">Ориентация листа</div><div class="modes"><label><input type="radio" name="o" value="land" checked><span>Горизонтальная</span></label><label><input type="radio" name="o" value="port"><span>Вертикальная</span></label></div></div>
+ </div>
+ <div class="card" id="paperCard"><h2>Масштаб для миллиметровки</h2><div id="paperBox"></div></div>
+ <div class="card"><h2>Обмен графиками</h2>
+  <div class="modes"><button id="exC">Код этого графика</button><button id="exF">Скачать файл (.json) со всеми графиками</button></div>
+  <label>Код или содержимое файла<textarea id="code" rows="4" placeholder="Здесь появится код. Чтобы загрузить чужой график, вставьте код и нажмите «Загрузить»."></textarea></label>
+  <div class="modes"><button class="p" id="imC">Загрузить из кода</button><label style="border:0;padding:0">или из файла: <input type="file" id="imF" accept=".json,.txt,application/json,text/plain"></label></div>
+  <p class="msg" id="xmsg">Загруженные графики добавляются новыми вкладками, ваши данные не затираются.</p>
+ </div>
+</section>
+<section class="col-g">
+ <div class="card">
+  <div class="bar no-print"><div class="modes"><label><input type="checkbox" id="vals"><span>Значения точек</span></label><label><input type="checkbox" id="errs"><span>Погрешности (мелким серым)</span></label></div><div class="exp"><button id="exSVG" title="Сохранить график как векторный файл">⭳ SVG</button><button id="exPNG" title="Сохранить график как картинку">⭳ PNG</button><button id="exPDF" title="Сохранить график как PDF в размере листа">⭳ PDF</button></div></div>
+  <div class="paper"><svg id="svg" viewBox="0 0 900 680" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <p class="msg no-print" id="exmsg">PNG, PDF и SVG сохраняются в размере листа 28,5 × 20 см (300 dpi): PDF можно печатать в масштабе 100 %.</p>
+ </div>
+</section>
+<section class="col-s">
+ <div class="card"><h2>Ряды данных на графике</h2>
+  <div class="grp"><div class="cap">Ряды</div><div class="chips" id="chips"></div><div class="btnrow" id="chipAct"></div></div>
+  <div class="grp"><div class="cap">Название и цвет</div>
+   <label>Название ряда (для легенды)<input type="text" id="sn" placeholder="напр. Эксперимент"></label><div class="sw" id="sw"></div></div>
+  <div class="grp"><div class="cap">Тип ряда</div><div class="modes">
+   <label><input type="radio" name="k" value="points"><span>Только точки</span></label>
+   <label><input type="radio" name="k" value="line" checked><span>Прямая по точкам</span></label>
+   <label><input type="radio" name="k" value="func"><span>Кривая y(x)</span></label>
+   <label><input type="radio" name="k" value="curve"><span>Кривая (не функция)</span></label>
+   <label><input type="radio" name="k" value="theory"><span>Теория y = f(x)</span></label></div></div>
+  <div class="grp" id="optLine"><div class="cap">Метод аппроксимации прямой</div><div class="modes">
+   <label><input type="radio" name="m" value="pairs"><span>Парные точки</span></label>
+   <label><input type="radio" name="m" value="mnk"><span>МНК</span></label>
+   <label><input type="radio" name="m" value="both" checked><span>Оба метода</span></label></div></div>
+  <div class="grp" id="optCurve" style="display:none"><div class="cap">Параметры кривой</div><div class="modes">
+   <label><input type="checkbox" id="nums"><span>Номера точек на графике</span></label>
+   <label id="lcl"><input type="checkbox" id="closed"><span>Замкнуть кривую</span></label>
+   <label id="lcp">Замкнуть на точку № <input type="text" id="cpt" placeholder="1" style="width:3.5rem"></label>
+   <label><input type="checkbox" id="corr" checked><span>Коридор погрешностей (верхняя и нижняя кривые)</span></label>
+   <label>Гладкость: ближе к точкам <input type="range" id="sm" min="-2" max="3" step="0.1" value="0"> глаже</label></div></div>
+  <div class="grp" id="optTheory" style="display:none"><div class="cap">Теоретическая зависимость</div>
+   <label>Формула y = f(x)<input type="text" id="fm" placeholder="напр. 2*x+1 или sin(x)"></label>
+   <p class="hint">Можно: + − * / ^, скобки, sin cos tan exp ln log sqrt (или √) abs, pi, e. Пример: 0,5x^2 − 3.</p></div>
+  <div class="grp" id="dataBox"><div class="cap">Точки</div>
+   <div class="tw"><table><thead><tr><th>№</th><th>x</th><th>Δx</th><th>y</th><th>Δy</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+   <div class="btnrow" style="margin-top:.6rem"><button class="p" id="add">+ Добавить точку</button><button id="ins0">+ В начало</button><button class="dng" id="clr">Очистить</button></div>
+   <p class="msg">Десятичный разделитель — запятая или точка. Погрешность 0 или пустая — отрезок не рисуется.<br>«＋» в строке вставляет новую точку ниже неё. Для кривой не функции порядок точек важен, поэтому там есть «↑» и «↓» для обмена соседних точек местами.</p></div>
+ </div>
+ <div class="card"><h2>Результаты</h2><div class="res" id="res"></div><p class="msg" id="note"></p></div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const COL=['#1a4fa0','#c62828','#2e7d32','#ef6c00','#6a1b9a','#00838f','#5d4037','#000000','#e91e8c'],KINDS=['points','line','func','curve','theory'];
+const str=(v,n)=>String(v==null?'':v).slice(0,n||200);
+function normS(s,i){s=s||{};let P=(Array.isArray(s.pts)?s.pts:[]).slice(0,2000).map(p=>[0,1,2,3].map(j=>str(Array.isArray(p)?p[j]:'',30)));if(!P.length)P=[['','','','']];
+ const sm=+s.sm;return{name:str(s.name,60),color:/^#[0-9a-f]{6}$/i.test(s.color)?s.color:COL[i%COL.length],kind:KINDS.includes(s.kind)?s.kind:'line',mode:['pairs','mnk','both'].includes(s.mode)?s.mode:'both',closed:!!s.closed,corr:s.corr!==false,nums:!!s.nums,sm:String(isFinite(sm)?Math.max(-2,Math.min(3,sm)):0),f:str(s.f,200),cp:str(s.cp,6),pts:P}}
+function normG(g){g=g||{};let ser=Array.isArray(g.ser)?g.ser.slice(0,20).map(normS):[];
+ if(!ser.length)ser=[normS(g.ser?{}:{kind:g.kind,mode:g.mode,closed:g.closed,corr:g.corr,nums:g.nums,sm:g.sm,pts:g.pts},0)];
+ return{xn:str(g.xn,60),xu:str(g.xu,40),yn:str(g.yn,60),yu:str(g.yu,40),ttl:str(g.ttl,200),zero:!!g.zero,paper:g.paper!==false,scl:['gost','ext','bad'].includes(g.scl)?g.scl:(g.gost?'gost':'ext'),orient:g.orient==='port'?'port':'land',vals:!!g.vals,errs:!!g.errs,si:Math.min(Math.max(g.si|0,0),ser.length-1),ser}}
+let G=[normG({})],cur=0,pts,delArm=false,delArmS=false;
+const S=()=>G[cur].ser[G[cur].si],sync=()=>{pts=S().pts};sync();
+function save(){const g=G[cur],s=S(),r=n=>document.querySelector('input[name='+n+']:checked').value;
+ g.xn=$('xn').value;g.xu=$('xu').value;g.yn=$('yn').value;g.yu=$('yu').value;g.ttl=$('ttl').value;g.zero=$('zero').checked;g.paper=$('paper').checked;g.scl=r('scl');g.orient=r('o');g.vals=$('vals').checked;g.errs=$('errs').checked;
+ s.name=$('sn').value;s.kind=r('k');s.mode=r('m');s.closed=$('closed').checked;s.corr=$('corr').checked;s.nums=$('nums').checked;s.sm=$('sm').value;s.f=$('fm').value;s.cp=$('cpt').value}
+function load(){const g=G[cur],s=S(),q=(n,v)=>{document.querySelector('input[name='+n+'][value='+v+']').checked=true};
+ $('xn').value=g.xn;$('xu').value=g.xu;$('yn').value=g.yn;$('yu').value=g.yu;$('ttl').value=g.ttl;$('zero').checked=g.zero;$('paper').checked=g.paper;q('scl',g.scl);q('o',g.orient);$('vals').checked=g.vals;$('errs').checked=g.errs;
+ $('sn').value=s.name;q('k',s.kind);q('m',s.mode);$('closed').checked=s.closed;$('corr').checked=s.corr;$('nums').checked=s.nums;$('sm').value=s.sm;$('fm').value=s.f;$('cpt').value=s.cp}
+function refresh(){sync();load();renderTabs();renderChips();renderSw();renderTable();draw()}
+function go(i){save();cur=i;delArm=false;delArmS=false;refresh()}
+function goS(i){save();G[cur].si=i;delArmS=false;refresh()}
+const mkBtn=(txt,cls,fn)=>{const b=document.createElement('button');if(cls)b.className=cls;b.textContent=txt;b.onclick=fn;return b};
+function renderTabs(){const t=$('tabs');t.innerHTML='';
+ G.forEach((g,i)=>t.appendChild(mkBtn('График '+(i+1),'tab'+(i===cur?' on':''),()=>go(i))));
+ t.appendChild(mkBtn('+ Добавить график','p',()=>{save();G.push(normG({}));go(G.length-1)}));
+ if(G.length>1){const sp=document.createElement('span');sp.className='sp';t.appendChild(sp);
+  t.appendChild(mkBtn(delArm?'Точно удалить график '+(cur+1)+'?':'Удалить этот график','dng',()=>{if(!delArm){delArm=true;renderTabs();return}G.splice(cur,1);cur=Math.max(0,cur-1);delArm=false;refresh()}))}}
+function renderChips(){const g=G[cur],t=$('chips'),ac=$('chipAct');t.innerHTML='';ac.innerHTML='';
+ g.ser.forEach((s,i)=>{const b=mkBtn('','chip'+(i===g.si?' on':''),()=>goS(i)),d=document.createElement('span');d.className='dot';d.style.background=s.color;b.appendChild(d);
+  b.appendChild(document.createTextNode(s.name||(s.kind==='theory'?'Теория':'Ряд '+(i+1))));t.appendChild(b)});
+ ac.appendChild(mkBtn('+ Добавить ряд','p',()=>{save();const used=g.ser.map(x=>x.color);g.ser.push(normS({color:COL.find(c=>!used.includes(c))||COL[g.ser.length%COL.length],kind:'line'},g.ser.length));goS(g.ser.length-1)}));
+ if(g.ser.length>1)ac.appendChild(mkBtn(delArmS?'Точно удалить ряд?':'Удалить этот ряд','dng',()=>{if(!delArmS){delArmS=true;renderChips();return}g.ser.splice(g.si,1);g.si=Math.max(0,g.si-1);delArmS=false;refresh()}))}
+function renderSw(){const t=$('sw');t.innerHTML='';COL.forEach(c=>{const b=mkBtn('','swb'+(S().color===c?' on':''),()=>{S().color=c;renderSw();renderChips();draw()});b.style.background=c;b.title='Цвет ряда';t.appendChild(b)})}
+// надстрочные и подстрочные индексы: ^2, ^-1, ^{..}, _0, _{..}
+function rich(str){const out=[];let i=0,buf='';const S=String(str);
+ const flush=()=>{if(buf){out.push({t:buf,k:0});buf=''}};
+ while(i<S.length){const c=S[i];
+  if(c==='√'||S.startsWith('sqrt{',i)){let inner,rest;
+   if(c==='√'){rest=S.slice(i+1);const m=rest[0]==='{'?null:rest.match(/^[A-Za-zА-Яа-я0-9.]+/);
+    if(rest[0]==='{'){let d=0,e=-1;for(let q=0;q<rest.length;q++){if(rest[q]==='{')d++;else if(rest[q]==='}'&&--d===0){e=q;break}}
+     if(e>0){inner=rest.slice(1,e);i+=e+2}}
+    else if(m){inner=m[0];i+=1+m[0].length}}
+   else{rest=S.slice(i+4);let d=0,e=-1;for(let q=0;q<rest.length;q++){if(rest[q]==='{')d++;else if(rest[q]==='}'&&--d===0){e=q;break}}
+    if(e>0){inner=rest.slice(1,e);i+=4+e+1}}
+   if(inner===undefined){buf+=c;i++;continue}
+   flush();out.push({t:'√',k:0});rich(inner).forEach(o=>out.push(Object.assign({},o,{o:1})));continue}
+  if(c==='^'||c==='_'){let rest=S.slice(i+1),m,txt;
+   if(rest[0]==='{'&&(m=rest.indexOf('}'))>0){txt=rest.slice(1,m);i+=m+2}
+   else if(c==='^'&&(m=rest.match(/^[+\-−]?[0-9]+/))){txt=m[0];i+=1+m[0].length}
+   else if(c==='_'&&(m=rest.match(/^[A-Za-zА-Яа-я0-9]+/))){txt=m[0];i+=1+m[0].length}
+   else if(rest.length){txt=rest[0];i+=2}else{buf+=c;i++;continue}
+   flush();out.push({t:txt.replace('-','−'),k:c==='^'?1:2})}
+  else{buf+=c;i++}}
+ flush();return out}
+const richHTML=str=>rich(str).map(o=>{const h=o.k===0?esc(o.t):o.k===1?'<sup>'+esc(o.t)+'</sup>':'<sub>'+esc(o.t)+'</sub>';return o.o?'<span style="text-decoration:overline">'+h+'</span>':h}).join('');
+function richSVG(str,size){let shift=0;return rich(str).map(o=>{const want=o.k===1?-size*.42:o.k===2?size*.22:0,dy=want-shift;shift=want;
+  return `<tspan${dy?` dy="${dy.toFixed(1)}"`:''}${o.k?` font-size="${(size*.7).toFixed(1)}"`:''}${o.o?' text-decoration="overline"':''}>${esc(o.t)}</tspan>`}).join('')}
+const num=s=>{const v=parseFloat(String(s).replace(',','.'));return isFinite(v)?v:NaN};
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function insertAt(i){const r=pts[Math.max(0,Math.min(i-1,pts.length-1))]||['','','',''];pts.splice(i,0,['',r[1],'',r[3]]);renderTable(i);draw()}
+let tbKind=null;
+function renderTable(foc){
+ $('tb').innerHTML='';const mv=S().kind==='curve';tbKind=S().kind;
+ pts.forEach((p,i)=>{
+  const tr=document.createElement('tr'),n=document.createElement('td');n.className='num';n.textContent=i+1;tr.appendChild(n);
+  p.forEach((v,j)=>{const td=document.createElement('td'),inp=document.createElement('input');inp.type='text';inp.inputMode='decimal';inp.value=v;
+   inp.oninput=()=>{pts[i][j]=inp.value;draw()};td.appendChild(inp);tr.appendChild(td)});
+  const td=document.createElement('td'),box=document.createElement('div');box.className='act';
+  const btn=(t,ttl,fn,dis)=>{const b=document.createElement('button');b.className='del';b.textContent=t;b.title=ttl;b.disabled=!!dis;b.onclick=fn;box.appendChild(b)};
+  if(mv){btn('↑','Поднять точку выше',()=>{[pts[i-1],pts[i]]=[pts[i],pts[i-1]];renderTable();draw()},i===0);
+  btn('↓','Опустить точку ниже',()=>{[pts[i+1],pts[i]]=[pts[i],pts[i+1]];renderTable();draw()},i===pts.length-1)}
+  btn('＋','Вставить новую точку ниже этой',()=>insertAt(i+1));
+  btn('✕','Удалить точку',()=>{pts.splice(i,1);if(!pts.length)pts.push(['','','','']);renderTable();draw()});
+  td.appendChild(box);tr.appendChild(td);$('tb').appendChild(tr)});
+ if(foc!=null){const r=$('tb').children[foc];r&&r.children[1].firstChild.focus()}
+}
+$('add').onclick=()=>insertAt(pts.length);
+$('ins0').onclick=()=>insertAt(0);
+$('clr').onclick=()=>{G[cur].pts=pts=[['','','','']];renderTable();draw()};
+
+// ---- округление по правилам (стр. 60) ----
+function roundErr(d){ if(!(d>0))return{d:0,dec:0};let e=Math.floor(Math.log10(d));let dig=Math.floor(d/10**e+1e-9);let dec=dig===1?-e+1:-e;
+ let r=+(Math.round(d*10**dec)/10**dec).toFixed(Math.max(dec,0));if(dec<0)r=Math.round(d/10**-dec)*10**-dec;
+ if(r>=10**(e+1)&&dig!==1){dec-=1}return{d:r,dec}}
+function fmt(v,dv){ // "v ± dv" с учётом округления
+ if(!isFinite(v))return'—';if(!(dv>0))return String(+v.toPrecision(4)).replace('.',',');
+ const {d,dec}=roundErr(dv);let s=10**(-dec);
+ const rv=dec>=0?+v.toFixed(dec):Math.round(v/s)*s;
+ let big=Math.max(Math.abs(rv),d),ex=0;
+ if(big>=1e5||big<1e-3){ex=Math.floor(Math.log10(big))}
+ const k=10**ex,f=x=>(x/k).toFixed(Math.max(dec+ex,0)).replace('.',',');
+ const t=f(rv)+' ± '+f(d);return ex?'('+t+')·10^'+ex:t}
+const fmtK=(v,dv)=>fmt(v,dv);
+
+// ---- вычисления ----
+function getData(sort=true,P=pts){const r=P.map((p,i)=>({n:i+1,x:num(p[0]),dx:Math.abs(num(p[1]))||0,y:num(p[2]),dy:Math.abs(num(p[3]))||0})).filter(p=>isFinite(p.x)&&isFinite(p.y));return sort?r.sort((a,b)=>a.x-b.x):r}
+function devMax(D,k,b){ // наибольшие отклонения с учётом погрешностей (рис. 3.4)
+ let ey=0,ex=0;D.forEach(p=>{const r=Math.abs(p.y-(k*p.x+b));ey=Math.max(ey,r+p.dy);ex=Math.max(ex,(k?r/Math.abs(k):0)+p.dx)});return{ex,ey}}
+function pairsMethod(D){
+ const N=D.length;if(N<2)return null;const m=Math.ceil(N/2),ks=[];
+ for(let i=0;i+m<N;i++){const a=D[i],c=D[i+m];if(c.x!==a.x)ks.push({i,j:i+m,k:(c.y-a.y)/(c.x-a.x)})}
+ if(!ks.length)return null;const n=ks.length,k=ks.reduce((s,q)=>s+q.k,0)/n;
+ const xc=D.reduce((s,p)=>s+p.x,0)/N,yc=D.reduce((s,p)=>s+p.y,0)/N,b=yc-k*xc;
+ let dk,how,mode,dev={};const kv=ks.map(q=>q.k);
+ const sig=n>=2?Math.sqrt(kv.reduce((s,v)=>s+(v-k)**2,0)/(n*(n-1))):0;
+ if(n>=6&&sig>1e-12){mode='sig';dk=sig;how='стандартное отклонение среднего (3.5), α = 0,68'}
+ else if(n<6&&n>=2&&Math.max(...kv)-Math.min(...kv)>1e-12){mode='korn';dk=(Math.max(...kv)-Math.min(...kv))/2;how='метод Корнфельда (3.4)'}
+ else{mode='line';const {ex,ey}=devMax(D,k,b),X=D[N-1].x-D[0].x,Y=D[N-1].y-D[0].y;dev={ex,ey,X,Y};
+  dk=Math.abs(k)*Math.hypot(X?ex/X:0,Y?ey/Y:0);how='точки лежат на прямой — по формуле (3.6) ∆k = k·δk'}
+ const xi=-b/k,inside=k!==0&&xi>=D[0].x&&xi<=D[N-1].x;let db,hb;
+ if(inside){db=devMax(D,k,b).ey;hb='прямая пересекает ось y внутри области: ∆b ≈ ∆y_max'}else{db=Math.abs(xc)*dk;hb='вне области: ∆b = x_c·∆k (3.10)'}
+ return{k,b,dk,db,how,hb,n,N,ks,xc,yc,sig,mode,dev,xi,inside,kmin:Math.min(...kv),kmax:Math.max(...kv),unused:N-2*n>0&&N%2?1:0}}
+function mnk(D){
+ const N=D.length;if(N<2)return null;let Sx=0,Sy=0,Sxy=0,Sxx=0;D.forEach(p=>{Sx+=p.x;Sy+=p.y;Sxy+=p.x*p.y;Sxx+=p.x*p.x});
+ const den=N*Sxx-Sx*Sx;if(Math.abs(den)<1e-300)return null;
+ const k=(N*Sxy-Sx*Sy)/den,b=(Sxy*Sx-Sy*Sxx)/(Sx*Sx-N*Sxx)*1; // (3.13)
+ const bb=(Sy-k*Sx)/N;const S=D.reduce((s,p)=>s+(p.y-k*p.x-bb)**2,0);
+ let dk=NaN,db=NaN;if(N>2){dk=Math.sqrt(N*S/((N-2)*den));db=Math.sqrt(Sxx*S/((N-2)*den))}
+ return{k,b:bb,dk,db,N,Sx,Sy,Sxx,Sxy,den,S}}
+
+// ---- кривые: сглаживающий кубический сплайн (Райнш), параметр подбирается по погрешностям ----
+function solveDense(A,b){const n=b.length;for(let i=0;i<n;i++){let p=i;for(let r=i+1;r<n;r++)if(Math.abs(A[r][i])>Math.abs(A[p][i]))p=r;[A[i],A[p]]=[A[p],A[i]];[b[i],b[p]]=[b[p],b[i]];
+ for(let r=i+1;r<n;r++){const f=A[r][i]/A[i][i];if(f){for(let c=i;c<n;c++)A[r][c]-=f*A[i][c];b[r]-=f*b[i]}}}
+ const x=Array(n).fill(0);for(let i=n-1;i>=0;i--){let s=b[i];for(let c=i+1;c<n;c++)s-=A[i][c]*x[c];x[i]=s/A[i][i]}return x}
+function ss(H,y,w,lam,cl){const n=y.length,m=cl?n:n-2,D=[],R=[];
+ for(let k=0;k<m;k++){D.push(Array(n).fill(0));R.push(Array(m).fill(0))}
+ for(let k=0;k<m;k++){const i=cl?k:k+1,p=(i-1+n)%n,q=(i+1)%n,h0=H[p],h1=H[i];
+  D[k][p]+=1/h0;D[k][i]+=-1/h0-1/h1;D[k][q]+=1/h1;R[k][k]+=(h0+h1)/3;
+  if(cl){R[k][p]+=h0/6;R[k][q]+=h1/6}else{if(k>0)R[k][k-1]+=h0/6;if(k<m-1)R[k][k+1]+=h1/6}}
+ const A=R.map((row,a)=>row.map((v,b)=>{let t=0;for(let j=0;j<n;j++)t+=D[a][j]*D[b][j]/w[j];return v+lam*t}));
+ const Mi=solveDense(A,D.map(r=>r.reduce((t,v,j)=>t+v*y[j],0)));
+ const g=y.map((v,j)=>{let t=0;for(let a=0;a<m;a++)t+=D[a][j]*Mi[a];return v-lam/w[j]*t});
+ return{g,M:cl?Mi:[0,...Mi,0]}}
+// ---- замкнутая кривая: базовый эллипс + периодический сплайн остатков (держит острые углы и не сжимается) ----
+function curveFitClosed(D,sm,corr){
+ const n=D.length,F=.004,X=D.map(p=>p.x),Y=D.map(p=>p.y),x0=Math.min(...X),y0=Math.min(...Y),S=Math.max(Math.max(...X)-x0,Math.max(...Y)-y0)||1;
+ const nx=X.map(v=>(v-x0)/S),ny=Y.map(v=>(v-y0)/S),ex=D.map(p=>p.dx/S),ey=D.map(p=>p.dy/S);
+ const s=[0];for(let i=1;i<n;i++)s[i]=s[i-1]+Math.max(Math.hypot(nx[i]-nx[i-1],ny[i]-ny[i-1]),1e-6);
+ const Lt=s[n-1]+Math.max(Math.hypot(nx[0]-nx[n-1],ny[0]-ny[n-1]),1e-6),th=s.map(v=>2*Math.PI*v/Lt),H=[];
+ for(let i=0;i<n-1;i++)H.push(s[i+1]-s[i]);H.push(Lt-s[n-1]);
+ const W=a=>a.map(v=>1/(Math.max(v,F)**2)),wx=W(ex),wy=W(ey);
+ const baseC=(y,w)=>{const A=[[0,0,0],[0,0,0],[0,0,0]],b=[0,0,0];for(let i=0;i<n;i++){const f=[1,Math.cos(th[i]),Math.sin(th[i])];for(let r=0;r<3;r++){b[r]+=w[i]*f[r]*y[i];for(let c=0;c<3;c++)A[r][c]+=w[i]*f[r]*f[c]}}return solveDense(A,b)};
+ const bv=(c,t)=>c[0]+c[1]*Math.cos(t)+c[2]*Math.sin(t),bd=(c,t)=>(2*Math.PI/Lt)*(-c[1]*Math.sin(t)+c[2]*Math.cos(t));
+ const fit1=(y,w,lam)=>{const c=baseC(y,w),b=th.map(t=>bv(c,t)),f=ss(H,y.map((v,i)=>v-b[i]),w,lam,true);return{c,f,g:b.map((v,i)=>v+f.g[i])}};
+ const fit=(Yx,Yy,lam)=>({x:fit1(Yx,wx,lam),y:fit1(Yy,wy,lam)});
+ const chi=f=>{let c=0;for(let i=0;i<n;i++)c+=wx[i]*(nx[i]-f.x.g[i])**2+wy[i]*(ny[i]-f.y.g[i])**2;return c};
+ let lo=-12,hi=3;const T=.5*n;for(let k=0;k<34;k++){const mid=(lo+hi)/2;if(chi(fit(nx,ny,10**mid))>T)hi=mid;else lo=mid}
+ const lam=10**((lo+hi)/2)*10**sm,f=fit(nx,ny,lam),K=28;
+ const sv=(g,M,i,u)=>{const h=H[i],j=(i+1)%n,a=1-u;return g[i]*a+g[j]*u+((a**3-a)*M[i]+(u**3-u)*M[j])*h*h/6};
+ const gen=ff=>{const out=[];for(let i=0;i<n;i++)for(let k=0;k<K;k++){const u=k/K,t=2*Math.PI*(s[i]+u*H[i])/Lt;
+   out.push({x:x0+(bv(ff.x.c,t)+sv(ff.x.f.g,ff.x.f.M,i,u))*S,y:y0+(bv(ff.y.c,t)+sv(ff.y.f.g,ff.y.f.M,i,u))*S})}return out};
+ const dk=(ff,i)=>{const h=H[i],j=(i+1)%n,g=ff.f.g,M=ff.f.M;return bd(ff.c,th[i])+(g[j]-g[i])/h-h*(2*M[i]+M[j])/6};
+ let up=null,lw=null;
+ if(corr){const soft=u=>Math.max(-1,Math.min(1,u/.3)),nn=th.map((_,i)=>{const dx=dk(f.x,i),dy=dk(f.y,i),l=Math.hypot(dx,dy)||1;return[-dy/l,dx/l]});
+  const ux=nx.map((v,i)=>v+soft(nn[i][0])*ex[i]),uy=ny.map((v,i)=>v+soft(nn[i][1])*ey[i]),lx=nx.map((v,i)=>v-soft(nn[i][0])*ex[i]),ly=ny.map((v,i)=>v-soft(nn[i][1])*ey[i]);
+  up=gen(fit(ux,uy,lam));lw=gen(fit(lx,ly,lam))}
+ let inn=0;for(let i=0;i<n;i++)if(Math.abs(f.x.g[i]-nx[i])<=Math.max(ex[i],F)+.0015&&Math.abs(f.y.g[i]-ny[i])<=Math.max(ey[i],F)+.0015)inn++;
+ return{main:gen(f),up,lo:lw,inn,cl:true,n}}
+function curveFitX(D,kind,closed,sm,corr,cp){
+ if(kind==='curve'&&closed&&cp>1){const ci=D.findIndex(p=>p.n===cp);
+  if(ci>=1&&D.length-ci>=3){const loop=curveFit(D.slice(ci),'curve',true,sm,corr);if(loop.err)return loop;
+   const tp=D.slice(0,ci+1);let tail=null;
+   if(tp.length>=3){tail=curveFit(tp,'curve',false,sm,corr);if(tail.err)tail=null}
+   if(!tail)tail={main:tp.map(p=>({x:p.x,y:p.y})),up:null,lo:null,inn:tp.length};
+   tail.main[tail.main.length-1]={x:loop.main[0].x,y:loop.main[0].y};
+   loop.tail=tail;loop.inn=Math.max(0,Math.min(D.length,loop.inn+tail.inn-1));loop.n=D.length;return loop}}
+ return curveFit(D,kind,closed,sm,corr)}
+function curveFit(D,kind,closed,sm,corr){
+ const n=D.length,F=.004,fn=kind==='func',cl=!fn&&closed;
+ if(cl)return curveFitClosed(D,sm,corr);
+ const X=D.map(p=>p.x),Y=D.map(p=>p.y),x0=Math.min(...X),y0=Math.min(...Y),Rx=Math.max(...X)-x0,Ry=Math.max(...Y)-y0;
+ const Sx=fn?(Rx||1):(Math.max(Rx,Ry)||1),Sy=fn?(Ry||1):Sx;
+ const nx=X.map(v=>(v-x0)/Sx),ny=Y.map(v=>(v-y0)/Sy),ex=D.map(p=>p.dx/Sx),ey=D.map(p=>p.dy/Sy);
+ const t=[0];for(let i=1;i<n;i++)t[i]=fn?nx[i]:t[i-1]+Math.max(Math.hypot(nx[i]-nx[i-1],ny[i]-ny[i-1]),1e-6);
+ if(fn)for(let i=1;i<n;i++)if(t[i]-t[i-1]<1e-9)return{err:'Для кривой y(x) значения x не должны повторяться. Если кривая не является функцией, выберите «Кривая (не функция)».'};
+ const H=[];for(let i=0;i<n-1;i++)H.push(t[i+1]-t[i]);
+ if(cl)H.push(Math.max(Math.hypot(nx[0]-nx[n-1],ny[0]-ny[n-1]),1e-6));
+ const W=a=>a.map(v=>1/(Math.max(v,F)**2));
+  const quad=(y,w)=>{const A=[[0,0,0],[0,0,0],[0,0,0]],b=[0,0,0];for(let i=0;i<n;i++){const f=[1,t[i],t[i]*t[i]];for(let r=0;r<3;r++){b[r]+=w[i]*f[r]*y[i];for(let c=0;c<3;c++)A[r][c]+=w[i]*f[r]*f[c]}}return solveDense(A,b)};
+ const sm_=(y,w,lam)=>{const c=quad(y,w),q=t.map(v=>c[0]+c[1]*v+c[2]*v*v),f=ss(H,y.map((v,i)=>v-q[i]),w,lam,false);return{g:f.g.map((v,i)=>v+q[i]),M:f.M.map(v=>v+2*c[2])}};
+ const fit=(Yx,Yy,wx,wy,lam)=>({fy:sm_(Yy,wy,lam),fx:fn?null:sm_(Yx,wx,lam)});
+ const chi=(f,wx,wy)=>{let c=0;for(let i=0;i<n;i++){c+=wy[i]*(ny[i]-f.fy.g[i])**2;if(!fn)c+=wx[i]*(nx[i]-f.fx.g[i])**2}return c};
+ const auto=(wx,wy)=>{let lo=-12,hi=3;const T=.25*(fn?n:2*n);for(let k=0;k<32;k++){const mid=(lo+hi)/2;if(chi(fit(nx,ny,wx,wy,10**mid),wx,wy)>T)hi=mid;else lo=mid}return 10**((lo+hi)/2)};
+ const der=(g,M,i)=>{if(cl||i<n-1){const h=H[i],j=(i+1)%n;return(g[j]-g[i])/h-h*(2*M[i]+M[j])/6}const h=H[i-1];return(g[i]-g[i-1])/h+h*(M[i-1]+2*M[i])/6};
+ let wx=W(ex),wy=W(ey);
+ if(fn){const f0=fit(nx,ny,wx,wy,auto(wx,wy));const sg=ny.map((_,i)=>der(f0.fy.g,f0.fy.M,i));wy=W(ey.map((e,i)=>Math.hypot(e,sg[i]*ex[i])))}
+ const lam=auto(wx,wy)*10**sm,f=fit(nx,ny,wx,wy,lam);
+ const K=28,val=(g,M,s,u)=>{const h=H[s],j=(s+1)%n,a=1-u;return g[s]*a+g[j]*u+((a**3-a)*M[s]+(u**3-u)*M[j])*h*h/6};
+ const gen=ff=>{const out=[],S=cl?n:n-1;for(let s=0;s<S;s++)for(let k=0;k<K;k++){const u=k/K;
+   out.push({x:x0+(fn?t[s]+u*H[s]:val(ff.fx.g,ff.fx.M,s,u))*Sx,y:y0+val(ff.fy.g,ff.fy.M,s,u)*Sy})}
+  if(!cl){const l=n-1;out.push({x:x0+(fn?t[l]:ff.fx.g[l])*Sx,y:y0+ff.fy.g[l]*Sy})}return out};
+ let up=null,lo=null;
+ if(corr){const soft=u=>Math.max(-1,Math.min(1,u/.3));let ux,uy,lx,ly;
+  if(fn){const sg=ny.map((_,i)=>der(f.fy.g,f.fy.M,i)),d=ey.map((e,i)=>e+Math.abs(sg[i])*ex[i]);
+   uy=ny.map((v,i)=>v+d[i]);ly=ny.map((v,i)=>v-d[i]);ux=lx=nx}
+  else{const dx=nx.map((_,i)=>der(f.fx.g,f.fx.M,i)),dy=ny.map((_,i)=>der(f.fy.g,f.fy.M,i));
+   const nn=dx.map((_,i)=>{const l=Math.hypot(dx[i],dy[i])||1;return[-dy[i]/l,dx[i]/l]});
+   ux=nx.map((v,i)=>v+soft(nn[i][0])*ex[i]);uy=ny.map((v,i)=>v+soft(nn[i][1])*ey[i]);
+   lx=nx.map((v,i)=>v-soft(nn[i][0])*ex[i]);ly=ny.map((v,i)=>v-soft(nn[i][1])*ey[i])}
+  up=gen(fit(ux,uy,wx,wy,lam));lo=gen(fit(lx,ly,wx,wy,lam))}
+ let inn=0;for(let i=0;i<n;i++){const gx=fn?nx[i]:f.fx.g[i],gy=f.fy.g[i],sl=fn?Math.abs(der(f.fy.g,f.fy.M,i)):0,tol=.0015;
+  if(Math.abs(gx-nx[i])<=Math.max(ex[i],F)+tol&&Math.abs(gy-ny[i])<=Math.max(ey[i],F)+sl*ex[i]+tol)inn++}
+ return{main:gen(f),up,lo,inn,cl,n}}
+
+// ---- шкала ----
+function niceAxis(lo,hi){
+ if(hi-lo<=0){const a=Math.abs(lo)||1;lo-=a*.5;hi+=a*.5}
+ const raw=(hi-lo)/6,mag=10**Math.floor(Math.log10(raw));let best=null;
+ for(const c of [1,2,2.5,5,10,20,50]){const st=c*mag,a=Math.floor(lo/st+1e-9)*st,z=Math.ceil(hi/st-1e-9)*st,n=Math.round((z-a)/st);
+  if(n>=4&&n<=10){const sc=Math.abs(n-6)+(c===2.5?.6:0);if(!best||sc<best.sc)best={sc,st,a,z}}}
+ if(!best){const st=raw<mag*1.5?mag:mag*2;best={st,a:Math.floor(lo/st)*st,z:Math.ceil(hi/st)*st}}
+ return best}
+const decs=st=>{let d=0;while(Math.abs(st*10**d-Math.round(st*10**d))>1e-9&&d<10)d++;return d};
+
+// ---- подробные расчёты для сверки ----
+const nf=v=>isFinite(v)?String(+v.toPrecision(6)).replace('.',','):'—';
+const calcOpen={};
+function pairsCalc(P,D){const m=Math.ceil(P.N/2),sum=P.ks.reduce((t,q)=>t+q.k,0);
+ let h=`<b>Пары точек</b> (i и j = i + ${m}):<table class="ct"><thead><tr><th>№</th><th>i</th><th>j</th><th>xᵢ</th><th>yᵢ</th><th>xⱼ</th><th>yⱼ</th><th>kᵢⱼ = (yⱼ−yᵢ)/(xⱼ−xᵢ)</th></tr></thead><tbody>`;
+ P.ks.forEach((q,t)=>{const a=D[q.i],c=D[q.j];h+=`<tr><td>${t+1}</td><td>${q.i+1}</td><td>${q.j+1}</td><td>${nf(a.x)}</td><td>${nf(a.y)}</td><td>${nf(c.x)}</td><td>${nf(c.y)}</td><td>${nf(q.k)}</td></tr>`});
+ h+=`</tbody></table>`;
+ h+=`k = Σkᵢⱼ / n = ${nf(sum)} / ${P.n} = <b>${nf(P.k)}</b><br>`;
+ h+=`x<sub>c</sub> = Σx / N = ${nf(P.xc)}, &nbsp; y<sub>c</sub> = Σy / N = ${nf(P.yc)}<br>`;
+ h+=`b = y<sub>c</sub> − k·x<sub>c</sub> = ${nf(P.yc)} − ${nf(P.k)}·${nf(P.xc)} = <b>${nf(P.b)}</b><br>`;
+ if(P.mode==='sig')h+=`Δk = √( Σ(kᵢⱼ−k)² / (n(n−1)) ) = <b>${nf(P.dk)}</b> (n = ${P.n} ≥ 6, формула 3.5)<br>`;
+ else if(P.mode==='korn')h+=`Δk = (k<sub>max</sub> − k<sub>min</sub>) / 2 = (${nf(P.kmax)} − ${nf(P.kmin)}) / 2 = <b>${nf(P.dk)}</b> (n = ${P.n} < 6, метод Корнфельда 3.4)<br>`;
+ else h+=`Все kᵢⱼ совпадают → Δk = |k|·√((Δx<sub>max</sub>/X)² + (Δy<sub>max</sub>/Y)²) = ${nf(Math.abs(P.k))}·√((${nf(P.dev.ex)}/${nf(P.dev.X)})² + (${nf(P.dev.ey)}/${nf(P.dev.Y)})²) = <b>${nf(P.dk)}</b> (3.6)<br>`;
+ h+=P.inside?`Прямая пересекает ось y внутри области точек (x₀ = ${nf(P.xi)}): Δb ≈ Δy<sub>max</sub> = <b>${nf(P.db)}</b><br>`:`Δb = |x<sub>c</sub>|·Δk = ${nf(Math.abs(P.xc))}·${nf(P.dk)} = <b>${nf(P.db)}</b> (3.10)<br>`;
+ return h}
+function mnkCalc(M){const N=M.N;
+ let h=`N = ${N}, Σx = ${nf(M.Sx)}, Σy = ${nf(M.Sy)}, Σx² = ${nf(M.Sxx)}, Σxy = ${nf(M.Sxy)}<br>`;
+ h+=`Δ = NΣx² − (Σx)² = ${nf(M.den)}<br>`;
+ h+=`k = (NΣxy − ΣxΣy) / Δ = <b>${nf(M.k)}</b><br>b = (Σy − kΣx) / N = <b>${nf(M.b)}</b><br>`;
+ if(N>2)h+=`S = Σ(yᵢ − kxᵢ − b)² = ${nf(M.S)}<br>Δk = √( N·S / ((N−2)·Δ) ) = <b>${nf(M.dk)}</b><br>Δb = √( Σx²·S / ((N−2)·Δ) ) = <b>${nf(M.db)}</b><br>`;
+ else h+='При N = 2 погрешности МНК не определены.<br>';
+ return h}
+// ---- масштаб для миллиметровки ----
+// 1) нужный масштаб = амплитуда по оси / длина оси на листе (единиц на 1 см)
+// 2) берём ближайший не меньший масштаб из ряда ГОСТ 2.302-68: 1, 2, 5 (иногда 2,5 и 4) × 10^k; 3, 6, 7, 9 запрещены
+const MS={gost:[1,2,2.5,4,5],ext:[1,1.25,1.6,2,2.5,4,5,8],bad:[1,1.25,1.5,1.6,2,2.5,4,5,8]};
+function paperAxis(dmin,dmax,Lmax,exLo,exHi,mant){mant=mant||MS.gost;const ext=mant.length>5;
+ let D=dmax-dmin;if(!(D>0)){const a=Math.abs(dmin)||1;dmin-=a*.5;dmax+=a*.5;D=dmax-dmin}
+ const cl=v=>+v.toPrecision(12),okStep=v=>{const m=cl(v/10**Math.floor(Math.log10(v)+1e-9));return mant.some(q=>Math.abs(m-q)<1e-6)};
+ const need=D/Lmax,PAD=.2,cands=[],p0=Math.floor(Math.log10(need))-1;
+ for(let p=p0;p<=p0+3;p++)for(const a of mant)cands.push({u:cl(a*10**p),a});
+ cands.sort((x,y)=>x.u-y.u);
+ const pick=(relax)=>{for(const cd of cands){if(cd.u<need*(1-1e-9))continue;const u=cd.u;let best=null;
+   for(const c of [1,2,2.5,4,5,10]){const T=cl(c*u);if(!okStep(T))continue;
+    let a0,n;
+    if(exLo){a0=dmin;n=Math.ceil((dmax+(exHi?0:PAD*u)-a0)/u-1e-9)}
+    else if(exHi){n=Math.ceil((dmax-dmin+PAD*u)/u-1e-9);a0=cl(dmax-n*u)}
+    else{a0=null}
+    const starts=a0===null?[cl(Math.floor((dmin-PAD*u)/T+1e-9)*T),cl(Math.floor((dmin-PAD*u)/u+1e-9)*u)]:[a0];
+    for(const st of starts){let a1=st,n1=n;if(a0===null)n1=Math.ceil((dmax+PAD*u-a1)/u-1e-9);
+     if(n1>Lmax||n1<2)continue;
+     const z=cl(a1+n1*u),lab=Math.floor(z/T+1e-9)-Math.ceil(a1/T-1e-9)+1;
+     if(relax===2?(lab<3||lab>16):relax?(lab<6||lab>16):(lab<6||lab>12))continue;
+     const ovLo=exLo?0:(dmin-a1)/u,ovHi=exHi?0:(z-dmax)/u;if(ovLo>1.5+1e-9||ovHi>1.5+1e-9)continue;
+     const sc=Math.abs(lab-8)*.25+ovLo+ovHi;if(!best||sc<best.sc)best={sc,u,T,a0:a1,n:n1,c,z,lab,a:cd.a}}}
+   if(best)return best}return null};
+ let b=pick(false)||pick(1)||pick(2);if(ext){const b2=pick(1);if(b2&&b&&b2.u<b.u*.9)b=b2}
+ if(b)return{u:b.u,T:b.T,a0:b.a0,a:b.a0,n:b.n,c:b.c,z:b.z,st:b.T,mm:true,cls:[1,2,5].includes(b.a)?0:[2.5,4].includes(b.a)?1:b.a===1.5?3:2,pri:[1,2,5].includes(b.a),lab:b.lab,need,amp:D,Lmax};
+ const u=cl(need*1.2);return{u,T:cl(u*2),a0:dmin,a:dmin,n:Lmax,c:2,z:cl(dmin+u*Lmax),st:cl(u*2),mm:true,cls:1,pri:false,lab:5,need,amp:D,Lmax}}
+// ---- рисование ----
+// ---- теоретическая зависимость: безопасный разбор формулы y = f(x) ----
+function compileF(src){
+ const s=String(src).toLowerCase().replace(/\s+/g,'').replace(/,/g,'.').replace(/[−–]/g,'-').replace(/[×·]/g,'*').replace(/π/g,'pi').replace(/\*\*/g,'^').replace(/^y=/,'');
+ if(!s)return null;const T=s.match(/\d+\.?\d*(?:e[+-]?\d+)?|\.\d+|[a-z]+|√|[-+*\/^()]/g);if(!T||T.join('')!==s)return null;
+ const F={sin:Math.sin,cos:Math.cos,tan:Math.tan,exp:Math.exp,ln:Math.log,log:Math.log10,sqrt:Math.sqrt,abs:Math.abs,asin:Math.asin,acos:Math.acos,atan:Math.atan,sh:Math.sinh,ch:Math.cosh,th:Math.tanh};
+ let i=0;const peek=()=>T[i],next=()=>T[i++],isStart=t=>t!==undefined&&/^[\d.a-z(√]/.test(t);
+ function expr(){let a=term();while(peek()==='+'||peek()==='-'){const o=next(),b=term(),l=a;a=o==='+'?x=>l(x)+b(x):x=>l(x)-b(x)}return a}
+ function term(){let a=unary();while(peek()==='*'||peek()==='/'||isStart(peek())){let o='*';if(peek()==='*'||peek()==='/')o=next();const b=unary(),l=a;a=o==='*'?x=>l(x)*b(x):x=>l(x)/b(x)}return a}
+ function unary(){if(peek()==='-'){next();const a=unary();return x=>-a(x)}if(peek()==='+'){next();return unary()}return pw()}
+ function pw(){const a=prim();if(peek()==='^'){next();const b=unary();return x=>Math.pow(a(x),b(x))}return a}
+ function prim(){const t0=next(),t=t0==='√'?'sqrt':t0;if(t===undefined)throw 0;
+  if(t==='('){const a=expr();if(next()!==')')throw 0;return a}
+  if(/^[\d.]/.test(t)){const v=parseFloat(t);if(!isFinite(v))throw 0;return()=>v}
+  if(t==='x')return x=>x;if(t==='pi')return()=>Math.PI;if(t==='e')return()=>Math.E;
+  if(F[t]){const f=F[t],a=peek()==='('?prim():pw();return x=>f(a(x))}throw 0}
+ try{const f=expr();return i===T.length?f:null}catch(e){return null}}
+function polyArea(a){let t=0;for(let i=0;i<a.length;i++){const p=a[i],q=a[(i+1)%a.length];t+=p.x*q.y-q.x*p.y}return t/2}
+function showOpts(){if(tbKind!==null&&tbKind!==S().kind&&(tbKind==='curve'||S().kind==='curve'))renderTable();const k=S().kind;$('optLine').style.display=k==='line'?'':'none';$('optCurve').style.display=(k==='func'||k==='curve')?'':'none';
+ $('lcl').style.display=k==='curve'?'':'none';$('lcp').style.display=(k==='curve'&&S().closed)?'':'none';$('optTheory').style.display=k==='theory'?'':'none';$('dataBox').style.display=k==='theory'?'none':''}
+function vfmt(v,dv){if(!(dv>0))return String(+v.toPrecision(4)).replace('.',',');const dec=roundErr(dv).dec;return(dec>=0?v.toFixed(dec):String(Math.round(v/10**-dec)*10**-dec)).replace('.',',')}
+function efmt(d){const r=roundErr(d);return(r.dec>0?r.d.toFixed(r.dec):String(r.d)).replace('.',',')}
+function persist(){try{save();localStorage.setItem('lgv2',JSON.stringify({G,cur}))}catch(e){}}
+function draw(){
+ persist();showOpts();
+ const g=G[cur],svg=$('svg');let W=900,H=680,L=85,T=35,PW=770,PH=520,R,B;let o='';
+ const SR=g.ser.map((Sx,idx)=>{const kind=Sx.kind,r={S:Sx,idx,kind,color:Sx.color,D:[],name:Sx.name||(kind==='theory'?'y = '+Sx.f:'Ряд '+(idx+1))};
+  if(kind==='theory')r.fn=compileF(Sx.f);
+  else{r.D=getData(kind!=='curve',Sx.pts);
+   if(kind==='line'){r.P=pairsMethod(r.D);r.M=mnk(r.D)}
+   if((kind==='func'||kind==='curve')&&r.D.length>=3)r.CV=curveFitX(r.D,kind,Sx.closed,+Sx.sm,Sx.corr||(kind==='curve'&&Sx.closed),parseInt(Sx.cp)||1)}
+  if(r.CV&&!r.CV.err&&r.CV.cl&&r.CV.up){const sm=polyArea(r.CV.main),su=polyArea(r.CV.up),sl=polyArea(r.CV.lo),v=[Math.abs(sm),Math.abs(su),Math.abs(sl)];
+   r.area={S:Math.abs(sm),sm,smax:Math.max(...v),smin:Math.min(...v)}}
+  return r});
+ const all=SR.flatMap(r=>r.D);
+ let xl=Infinity,xh=-Infinity,yl=Infinity,yh=-Infinity;
+ const ext=(x,y)=>{if(!isFinite(x)||!isFinite(y))return;xl=Math.min(xl,x);xh=Math.max(xh,x);yl=Math.min(yl,y);yh=Math.max(yh,y)};
+ all.forEach(p=>{ext(p.x-p.dx,p.y-p.dy);ext(p.x+p.dx,p.y+p.dy)});
+ SR.forEach(r=>{if(r.CV&&!r.CV.err)[r.CV.main,r.S.corr&&r.CV.up,r.S.corr&&r.CV.lo,...(r.CV.tail?[r.CV.tail.main,r.S.corr&&r.CV.tail.up,r.S.corr&&r.CV.tail.lo]:[])].forEach(a=>a&&a.forEach(p=>ext(p.x,p.y)))});
+ const hasPts=isFinite(xl),th=SR.filter(r=>r.fn);
+ if(!hasPts&&!th.length){svg.innerHTML='<text x="450" y="340" text-anchor="middle" font-size="18" fill="#666">Введите хотя бы одну точку или формулу</text>';$('res').innerHTML='';$('note').textContent='';return}
+ if(!hasPts){xl=0;xh=10}
+ const Y0=yl,Y1=yh,Rg=(Y1-Y0)||1;
+ th.forEach(r=>{for(let i=0;i<=200;i++){const x=xl+(xh-xl)*i/200,y=r.fn(x);if(!isFinite(y)||Math.abs(y)>1e9)continue;if(hasPts&&(y<Y0-3*Rg||y>Y1+3*Rg))continue;ext(x,y)}});
+ if(!isFinite(yl)){yl=0;yh=1}
+ const PX=900/285,port=g.orient==='port',SW=port?200:285,SH=port?285:200;let planFor,extUsed=null,AX,AY,BX,BY,Lmm=10,B0mm=SH-10,topMm=25;
+ const wrapT=(txt,maxPx,fs)=>{const maxCh=Math.max(8,Math.floor(maxPx/(fs*.58))),words=String(txt).trim().split(/\s+/).filter(Boolean),lines=[];let cur='';
+  words.forEach(w=>{while(w.length>maxCh){if(cur){lines.push(cur);cur=''}lines.push(w.slice(0,maxCh));w=w.slice(maxCh)}
+   if(!cur)cur=w;else if((cur+' '+w).length<=maxCh)cur+=' '+w;else{lines.push(cur);cur=w}});
+  if(cur)lines.push(cur);return lines};
+ const tW=g.paper?(SW-12)*PX:(port?680:900)-40;
+ let tfs=18,tLines=wrapT(g.ttl,tW,18);if(tLines.length>3){tfs=15;tLines=wrapT(g.ttl,tW,15)}if(tLines.length>3){tfs=13;tLines=wrapT(g.ttl,tW,13)}
+ const tlh=tfs*1.2,titleMm=tLines.length?tLines.length*tlh/PX+2:0;
+ topMm=5+titleMm+9;   // отступ 5 мм + заголовок + место под стрелку и обозначение оси y
+ const lim=pt=>{const sw=pt?200:285,sh=pt?285:200;return[Math.floor((sw-10-5)/10),Math.floor((sh-10-12)/10)]};
+ if(g.paper){
+  const ax1=(vals,lo,hi)=>{let dmin=lo,dmax=hi,exLo=false,exHi=false;
+   if(g.zero){const cMin=Math.min(...vals),cMax=Math.max(...vals);
+    if(cMin>=0&&lo>=0){dmin=0;exLo=true}else dmin=Math.min(dmin,0);
+    if(cMax<=0&&hi<=0){dmax=0;exHi=true}else dmax=Math.max(dmax,0)}
+   return[dmin,dmax,exLo,exHi]};
+  const bx=ax1(all.length?all.map(p=>p.x):[xl,xh],xl,xh),by=ax1(all.length?all.map(p=>p.y):[yl,yh],yl,yh);
+  BX=bx;BY=by;const lmm=lim(port);
+  const scl=g.scl||'ext';
+  planFor=(lm,sw,sh)=>{const GA=sw*sh/100,fo=(a,b)=>(xh-xl)/a.u*(yh-yl)/b.u/GA,mk=m=>{const a=paperAxis(bx[0],bx[1],lm[0],bx[2],bx[3],m),b=paperAxis(by[0],by[1],lm[1],by[2],by[3],m);return{AX:a,AY:b,fill:fo(a,b)}};
+   let P=mk(MS.gost);P.tier=null;
+   if(hasPts&&scl!=='gost'&&P.fill<.5){const e=mk(MS.ext);if(e.fill>P.fill*1.05){P=e;P.tier='ext'}
+    if(scl==='bad'&&P.fill<.5){const b2=mk(MS.bad);if(b2.fill>P.fill*1.05){P=b2;P.tier='bad'}}}
+   return P};
+  const PL=planFor(lmm,SW,SH);AX=PL.AX;AY=PL.AY;extUsed=PL.tier;
+  W=SW*PX;H=SH*PX;L=Lmm*PX;PW=AX.n*10*PX;PH=AY.n*10*PX;T=B0mm*PX-PH;
+ }else{
+  const px=(xh-xl)*.04||1,py=(yh-yl)*.04||1;
+  let xLo=xl-px,xHi=xh+px,yLo=yl-py,yHi=yh+py;
+  if(g.zero){
+   const fix=(vals,lo0,hi0,pad)=>{const cMin=Math.min(...vals),cMax=Math.max(...vals);
+    const lo=cMin>=0?(lo0>=0?0:lo0-pad):Math.min(lo0-pad,0);
+    const hi=cMax<=0?(hi0<=0?0:hi0+pad):Math.max(hi0+pad,0);return[lo,hi]};
+   [xLo,xHi]=fix(all.length?all.map(p=>p.x):[xl,xh],xl,xh,px);
+   [yLo,yHi]=fix(all.length?all.map(p=>p.y):[yl,yh],yl,yh,py);
+  }
+  AX=niceAxis(xLo,xHi);AY=niceAxis(yLo,yHi);
+  if(port){W=680;H=900;PW=520;PH=770}
+ }
+ R=L+PW;B=T+PH;svg.setAttribute('viewBox','0 0 '+W.toFixed(1)+' '+H.toFixed(1));
+ const sx=v=>L+(v-AX.a)/(AX.z-AX.a)*PW,sy=v=>B-(v-AY.a)/(AY.z-AY.a)*PH;
+ o+=`<defs><clipPath id="cp"><rect x="${L}" y="${T}" width="${PW}" height="${PH}"/></clipPath></defs><rect width="${W}" height="${H}" fill="#fff"/>`;
+ const mmGrid=()=>{let q='';const stl=m=>m%10===0?['#e8a08a',.9]:m%5===0?['#efb9a8',.6]:['#f6d9cf',.35];
+  for(let m=0;m<=SW;m++){const[c,w]=stl(m);q+=`<line x1="${(m*PX).toFixed(2)}" y1="0" x2="${(m*PX).toFixed(2)}" y2="${(SH*PX).toFixed(2)}" stroke="${c}" stroke-width="${w}"/>`}
+  for(let m=0;m<=SH;m++){const[c,w]=stl(m);q+=`<line x1="0" y1="${(m*PX).toFixed(2)}" x2="${(SW*PX).toFixed(2)}" y2="${(m*PX).toFixed(2)}" stroke="${c}" stroke-width="${w}"/>`}return q};
+ const grid=(A,s,vert)=>{let q='',n=Math.round((A.z-A.a)/A.st);for(let i=0;i<=n;i++)for(let j=0;j<5;j++){if(i===n&&j>0)break;const v=A.a+(i+j/5)*A.st,p=s(v),maj=j===0;
+   q+=vert?`<line x1="${p}" y1="${T}" x2="${p}" y2="${B}" stroke="${maj?'#e8a08a':'#f3cfc3'}" stroke-width="${maj?1:.6}"/>`:`<line x1="${L}" y1="${p}" x2="${R}" y2="${p}" stroke="${maj?'#e8a08a':'#f3cfc3'}" stroke-width="${maj?1:.6}"/>`}return q};
+ o+=g.paper?mmGrid():grid(AX,sx,true)+grid(AY,sy,false);
+ const inr=A=>A.a<=A.st*1e-9&&A.z>=-A.st*1e-9,zx=inr(AX),zy=inr(AY),zm=zx&&zy,AXX=zx?sx(0):L,AYY=zy?sy(0):B;
+ const ord=A=>{const m=Math.max(Math.abs(A.a),Math.abs(A.z));const e=Math.floor(Math.log10(m||1));return(e>=4||e<=-3)?e:0};
+ const ex=ord(AX),ey=ord(AY);
+ const ticks=(A,s,e,vert)=>{let t='',n=Math.floor((A.z-A.a)/A.st+1e-9),d=Math.max(decs(A.st/10**e),0),lfs=15;
+  if(!vert){let mc=1;for(let i=Math.ceil(A.a/A.st-1e-9);i*A.st<=A.z+A.st*1e-9;i++)mc=Math.max(mc,(+(i*A.st).toPrecision(12)/10**e).toFixed(d).length);lfs=Math.max(8,Math.min(15,(AXX-12)/(mc*.52)))}for(let i=Math.ceil(A.a/A.st-1e-9);i*A.st<=A.z+A.st*1e-9;i++){const v=+(i*A.st).toPrecision(12),p=s(v),lab=(v/10**e).toFixed(d).replace('.',',').replace(/^-0(,0*)?$/,'0');
+   if(!vert&&zm&&Math.abs(v)<A.st*1e-9)continue;
+   t+=vert?`<line x1="${p}" y1="${AYY}" x2="${p}" y2="${AYY+7}" stroke="#000" stroke-width="1.3"/><text x="${p}" y="${AYY+24}" text-anchor="middle" font-size="15">${lab}</text>`
+   :`<line x1="${AXX-6}" y1="${p}" x2="${AXX}" y2="${p}" stroke="#000" stroke-width="1.3"/><text x="${AXX-8}" y="${p+lfs/3}" text-anchor="end" font-size="${lfs.toFixed(1)}">${lab}</text>`}return t};
+ o+=`<g font-family="Times New Roman,serif" fill="#000">`+ticks(AX,sx,ex,true)+ticks(AY,sy,ey,false);
+ o+=`<g stroke="#000" stroke-width="2" fill="#000"><line x1="${L}" y1="${AYY}" x2="${R+8}" y2="${AYY}"/><line x1="${AXX}" y1="${B}" x2="${AXX}" y2="${T-8}"/>
+  <polygon points="${R+15},${AYY} ${R+5},${AYY-4} ${R+5},${AYY+4}" stroke="none"/><polygon points="${AXX},${T-15} ${AXX-4},${T-5} ${AXX+4},${T-5}" stroke="none"/></g>`;
+ const lab=(n,u,e)=>richSVG([n,(e?'10^{'+e+'} ':'')+u].filter(x=>x.trim()).join(', '),17);
+ const xnY=AYY+46>H-8?AYY-10:AYY+46;o+=`<text x="${R+10}" y="${xnY}" text-anchor="end" font-size="17" font-style="italic">${lab(g.xn,g.xu,ex)}</text>`;
+ o+=`<text x="${AXX+12}" y="${T-14}" font-size="17" font-style="italic">${lab(g.yn,g.yu,ey)}</text>`;
+ // линии рядов
+ const pth=(a,c)=>'M'+a.map(p=>sx(p.x).toFixed(1)+' '+sy(p.y).toFixed(1)).join('L')+(c?'Z':'');
+ const ln=(f,c,dash)=>`<line clip-path="url(#cp)" x1="${sx(AX.a)}" y1="${sy(f.k*AX.a+f.b)}" x2="${sx(AX.z)}" y2="${sy(f.k*AX.z+f.b)}" stroke="${c}" stroke-width="2" ${dash?`stroke-dasharray="${dash}"`:''}/>`;
+ const leg=[];
+ SR.forEach(r=>{const c=r.color,Sx=r.S;
+  if(r.fn){let d='',pen=false,prev=null;const N=500,big=10*(AY.z-AY.a);
+   for(let i=0;i<=N;i++){const x=AX.a+(AX.z-AX.a)*i/N,y=r.fn(x);if(!isFinite(y)||Math.abs(y)>1e9){pen=false;prev=null;continue}
+    if(prev!==null&&(prev>0)!==(y>0)&&Math.abs(prev)>big&&Math.abs(y)>big)pen=false;
+    d+=(pen?'L':'M')+sx(x).toFixed(1)+' '+sy(y).toFixed(1);pen=true;prev=y}
+   o+=`<path clip-path="url(#cp)" d="${d}" fill="none" stroke="${c}" stroke-width="2.2"/>`;leg.push({c,t:r.name})}
+  if(r.kind==='line'){if(r.P&&Sx.mode!=='mnk'){o+=ln(r.P,c,'');leg.push({c,t:r.name+': парные точки'})}
+   if(r.M&&Sx.mode!=='pairs'){o+=ln(r.M,c,Sx.mode==='both'?'9 5':'');leg.push({c,dash:Sx.mode==='both'?'9 5':'',t:r.name+': МНК'})}}
+  if(r.CV&&!r.CV.err){[r.S.corr&&r.CV.up,r.S.corr&&r.CV.lo].forEach(a=>{if(a)o+=`<path clip-path="url(#cp)" d="${pth(a,r.CV.cl)}" fill="none" stroke="${c}" stroke-width="1.7" stroke-dasharray="3 4"/>`});
+   o+=`<path clip-path="url(#cp)" d="${pth(r.CV.main,r.CV.cl)}" fill="none" stroke="${c}" stroke-width="2.3"/>`;
+   if(r.CV.tail){const tl=r.CV.tail;[r.S.corr&&tl.up,r.S.corr&&tl.lo].forEach(a=>{if(a)o+=`<path clip-path="url(#cp)" d="${pth(a,false)}" fill="none" stroke="${c}" stroke-width="1.7" stroke-dasharray="3 4"/>`});o+=`<path clip-path="url(#cp)" d="${pth(tl.main,false)}" fill="none" stroke="${c}" stroke-width="2.3"/>`}
+   leg.push({c,t:r.name});if(r.S.corr&&r.CV.up)leg.push({c,dash:'3 4',t:r.name+': коридор погрешностей'})}
+  if(r.kind==='points')leg.push({c,m:1,t:r.name})});
+ // точки, погрешности, подписи
+ SR.forEach(r=>{const c=r.color,nums=r.S.nums&&(r.kind==='func'||r.kind==='curve');r.D.forEach(p=>{const X=sx(p.x),Y=sy(p.y);o+=`<g stroke="${c}" stroke-width="1.3">`;
+  if(p.dx>0){const a=sx(p.x-p.dx),b=sx(p.x+p.dx);o+=`<line x1="${a}" y1="${Y}" x2="${b}" y2="${Y}"/><line x1="${a}" y1="${Y-4}" x2="${a}" y2="${Y+4}"/><line x1="${b}" y1="${Y-4}" x2="${b}" y2="${Y+4}"/>`}
+  if(p.dy>0){const a=sy(p.y+p.dy),b=sy(p.y-p.dy);o+=`<line x1="${X}" y1="${a}" x2="${X}" y2="${b}"/><line x1="${X-4}" y1="${a}" x2="${X+4}" y2="${a}"/><line x1="${X-4}" y1="${b}" x2="${X+4}" y2="${b}"/>`}
+  o+=`</g><circle cx="${X}" cy="${Y}" r="3.6" fill="${c}"/>`;
+  if(nums)o+=`<text x="${X-6}" y="${Y-8}" text-anchor="end" font-size="14" fill="#333">${p.n}</text>`;
+  if(g.vals)o+=`<text x="${X+8}" y="${Y-8}" font-size="13" fill="#111">(${vfmt(p.x,p.dx)}; ${vfmt(p.y,p.dy)})</text>`;
+  if(g.errs){const e=[p.dx>0?'Δx = '+efmt(p.dx):'',p.dy>0?'Δy = '+efmt(p.dy):''].filter(Boolean).join('; ');if(e)o+=`<text x="${X+8}" y="${Y-8+(g.vals?13:0)}" font-size="10.5" fill="#888">${e}</text>`}})});
+ // легенда
+ let ly=T+22;leg.forEach(e=>{const w=Math.min(PW-20,90+e.t.length*7.5);
+  o+=`<rect x="${L+10}" y="${ly-14}" width="${w}" height="22" fill="#fff" fill-opacity=".85"/>`+(e.m?`<circle cx="${L+34}" cy="${ly-3}" r="3.6" fill="${e.c}"/>`:`<line x1="${L+16}" y1="${ly-3}" x2="${L+52}" y2="${ly-3}" stroke="${e.c}" stroke-width="2" ${e.dash?`stroke-dasharray="${e.dash}"`:''}/>`)+`<text x="${L+60}" y="${ly+2}" font-size="14">${richSVG(e.t,14)}</text>`;ly+=24});
+ if(g.paper){
+  const CS=6,cw=Math.ceil(W/CS)+1,chh=Math.ceil(H/CS)+1,occ=new Uint8Array(cw*chh);
+  const mark=(x0,y0,x1,y1)=>{for(let j=Math.max(0,Math.floor(y0/CS));j<=Math.min(chh-1,Math.floor(y1/CS));j++)for(let i=Math.max(0,Math.floor(x0/CS));i<=Math.min(cw-1,Math.floor(x1/CS));i++)occ[j*cw+i]=1};
+  const seg=(a,b)=>{const n=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/4));for(let i=0;i<=n;i++){const x=a[0]+(b[0]-a[0])*i/n,y=a[1]+(b[1]-a[1])*i/n;mark(x-6,y-6,x+6,y+6)}};
+  const poly=arr=>{for(let i=1;i<arr.length;i++){const a=arr[i-1],b=arr[i];if(isFinite(a[0]+a[1]+b[0]+b[1])&&Math.abs(a[1])<1e5&&Math.abs(b[1])<1e5)seg(a,b)}};
+  mark(L-64,T-34,AXX+5,B+4);mark(L-64,AYY-30,R+20,AYY+56);mark(AXX,T-34,AXX+170,T-4);
+  {let q=T+22;leg.forEach(e=>{const w=Math.min(PW-20,90+e.t.length*7.5);mark(L+10,q-14,L+10+w,q+8);q+=24})}
+  SR.forEach(r=>{
+   r.D.forEach(p=>{const X=sx(p.x),Y=sy(p.y),xa=sx(p.x-p.dx),xb=sx(p.x+p.dx),ya=sy(p.y+p.dy),yb2=sy(p.y-p.dy);
+    mark(Math.min(X,xa,xb)-5,Math.min(Y,ya,yb2)-5,Math.max(X,xa,xb)+5,Math.max(Y,ya,yb2)+5);
+    if(g.vals||g.errs||(r.S.nums&&(r.kind==='func'||r.kind==='curve')))mark(X-22,Y-30,X+(g.vals?175:100),Y+4)});
+   if(r.kind==='line'){const ends=f=>poly([[sx(AX.a),sy(f.k*AX.a+f.b)],[sx(AX.z),sy(f.k*AX.z+f.b)]]);if(r.P&&r.S.mode!=='mnk')ends(r.P);if(r.M&&r.S.mode!=='pairs')ends(r.M)}
+   if(r.CV&&!r.CV.err){const P2=a=>a&&poly(a.map(q=>[sx(q.x),sy(q.y)]));P2(r.CV.main);if(r.S.corr){P2(r.CV.up);P2(r.CV.lo)}
+    if(r.CV.tail){P2(r.CV.tail.main);if(r.S.corr){P2(r.CV.tail.up);P2(r.CV.tail.lo)}}}
+   if(r.fn){const a=[];for(let i=0;i<=300;i++){const x=AX.a+(AX.z-AX.a)*i/300,y=r.fn(x);a.push(isFinite(y)?[sx(x),sy(y)]:[NaN,NaN])}poly(a)}});
+  const S2=new Int32Array((cw+1)*(chh+1));for(let j=0;j<chh;j++)for(let i=0;i<cw;i++)S2[(j+1)*(cw+1)+i+1]=occ[j*cw+i]+S2[j*(cw+1)+i+1]+S2[(j+1)*(cw+1)+i]-S2[j*(cw+1)+i];
+  const cnt=(x0,y0,x1,y1)=>{const i0=Math.max(0,Math.floor(x0/CS)),j0=Math.max(0,Math.floor(y0/CS)),i1=Math.min(cw-1,Math.floor(x1/CS))+1,j1=Math.min(chh-1,Math.floor(y1/CS))+1;return S2[j1*(cw+1)+i1]-S2[j0*(cw+1)+i1]-S2[j1*(cw+1)+i0]+S2[j0*(cw+1)+i0]};
+  const M0=14;let pick=null;
+  for(const wf of [.92,.6,.4]){for(const fs of [18,15,13]){
+    const lines=wrapT(g.ttl,(W-2*M0)*wf,fs);if(lines.length>(wf>.5?2:4))continue;
+    const lh=fs*1.2,tw=Math.min(W-2*M0,Math.max(...lines.map(l=>l.replace(/[\^_{}]/g,'').length),1)*fs*.58+10),th=lines.length*lh+8;let best=null;
+    for(let y=M0;y+th<=H-M0;y+=10)for(let x=M0;x+tw<=W-M0;x+=10){if(cnt(x,y,x+tw,y+th)===0){const sc=y+Math.abs(x+tw/2-W/2)*.5;if(!best||sc<best.sc)best={sc,x,y,tw,lines,fs,lh}}}
+    if(best){pick=best;break}}if(pick)break}
+  if(!pick){const fs=13,lines=wrapT(g.ttl,(W-2*M0)*.92,fs);pick={x:M0,y:M0,tw:W-2*M0,lines,fs,lh:fs*1.2}}
+  pick.lines.forEach((ln,i)=>{o+=`<text x="${(pick.x+pick.tw/2).toFixed(1)}" y="${(pick.y+pick.fs+i*pick.lh).toFixed(1)}" text-anchor="middle" font-size="${pick.fs}">${richSVG(ln,pick.fs)}</text>`})}
+ else{const yb=H-28;tLines.forEach((ln,i)=>{o+=`<text x="${(W/2).toFixed(1)}" y="${(yb-(tLines.length-1-i)*tlh).toFixed(1)}" text-anchor="middle" font-size="${tfs}">${richSVG(ln,tfs)}</text>`})}
+ o+='</g>';
+ svg.innerHTML=o;
+ // результаты
+ const unitK=()=>{const a=g.yu.trim(),b=g.xu.trim();return a&&b?richHTML(a)+'/'+richHTML(b):a?richHTML(a):b?'1/'+richHTML(b):''};
+ const unitS=()=>{const a=g.xu.trim(),b=g.yu.trim();return a&&b?richHTML(a)+'·'+richHTML(b):richHTML(a||b)};
+ const areaCalc=(r,dS)=>{const A=r.area,u=unitS();
+  return `Площадь считается по формуле Гаусса (шнуровки) для ломаной из ${r.CV.main.length} точек гладкой кривой: S = ½·|Σ(xᵢ·yᵢ₊₁ − xᵢ₊₁·yᵢ)|.<br>
+Основная петля: S = <b>${nf(A.S)}</b> ${u} (обход ${A.sm>0?'против часовой стрелки':'по часовой стрелке'})<br>
+Наибольшая петля в пределах погрешностей: S<sub>max</sub> = <b>${nf(A.smax)}</b> ${u}<br>
+Наименьшая петля в пределах погрешностей: S<sub>min</sub> = <b>${nf(A.smin)}</b> ${u}<br>
+ΔS = (S<sub>max</sub> − S<sub>min</sub>) / 2 = (${nf(A.smax)} − ${nf(A.smin)}) / 2 = <b>${nf(dS)}</b> ${u}<br>
+Результат: S = ${richHTML(fmt(A.S,dS))} ${u}`};
+ const areaHtml=(r,tg)=>{if(r.kind!=='curve')return'';
+  if(!r.S.closed)return'<br><small>Чтобы найти площадь внутри петли, включите «Замкнуть кривую».</small>';
+  if(!r.area)return'';const A=r.area,dS=(A.smax-A.smin)/2;
+  let h=`<br><b>Площадь петли:</b> S = ${richHTML(fmt(A.S,dS))} ${unitS()}`;
+  if(g.paper){const cm2=A.S/(AX.u*AY.u);h+=`<br><small>На листе миллиметровки: ${nf(+cm2.toFixed(1))} см² (${nf(Math.round(cm2*100))} мм²).</small>`}
+  return h+tg(r.idx+':a',areaCalc(r,dS))};
+ let res='',note='';
+ SR.forEach(r=>{const c=r.color,box=(t,body,small,more)=>`<div style="border-left:4px solid ${c}"><b>${richHTML(t)}</b>${body}${small?`<small>${small}</small>`:''}${more||''}</div>`;
+  const tg=(key,html)=>`<br><button class="calcb" data-k="${key}">${calcOpen[key]?'Скрыть расчёт':'Показать расчёт для сверки'}</button>${calcOpen[key]?`<div class="calc">${html}</div>`:''}`;
+  const card=(t,f,extra,more)=>box(t,`k = ${richHTML(fmt(f.k,f.dk))} ${unitK()}<br>b = ${richHTML(fmt(f.b,f.db))} ${richHTML(g.yu)}<br>`,extra,more);
+  if(r.kind==='theory')res+=box(r.name,r.fn?'Теоретическая зависимость.':`Не удалось разобрать формулу «${esc(r.S.f)}».`,r.fn?'':'Пример: 2*x+1, sin(x), 0,5x^2.');
+  else if(r.kind==='points')res+=box(r.name,`Точек: ${r.D.length}.`,'Только точки, без линии.');
+  else if(r.kind==='line'){let any=false;
+   if(r.P&&r.S.mode!=='mnk'){any=true;res+=card(r.name+' — парные точки',r.P,`N = ${r.P.N}, пар: ${r.P.n} (i и i+${Math.ceil(r.P.N/2)}); ∆k: ${r.P.how}; ∆b: ${r.P.hb}${r.P.unused?'; одна средняя точка в парах не участвует':''}`,tg(r.idx+':p',pairsCalc(r.P,r.D)));if(r.D.length<8)note='Для метода парных точек рекомендуется не менее 6–8 точек.'}
+   if(r.M&&r.S.mode!=='pairs'){any=true;res+=card(r.name+' — МНК',r.M,r.M.N>2?`N = ${r.M.N}; ∆k, ∆b по формулам (3.14), (3.15)`:'для N = 2 погрешности МНК не определены',tg(r.idx+':m',mnkCalc(r.M)))}
+   if(!any)res+=box(r.name,'Нужно минимум 2 точки с разными x.','')}
+  else{const nm=r.kind==='func'?'Кривая y(x)':(r.S.closed?'Замкнутая кривая':'Кривая (не функция)');
+   res+=r.D.length<3?box(r.name,'Для кривой нужно минимум 3 точки.',''):r.CV.err?box(r.name,esc(r.CV.err),''):
+    box(r.name+' — '+nm,`Точек: ${r.D.length}. Кривая проходит через область погрешностей у ${r.CV.inn} из ${r.D.length} точек.<br>`,`${r.S.corr&&r.CV.up?' Пунктир — коридор погрешностей.':''}`,areaHtml(r,tg))}});
+ $('res').innerHTML=res;$('note').textContent=note;
+ $('paperCard').style.display=g.paper?'':'none';
+ if(g.paper){const mm=(v,A)=>(v-A.a)/A.u*10,uX=richHTML(g.xu),uY=richHTML(g.yu);
+  const kind=A=>A.cls===0?'ГОСТ':A.cls===1?'ГОСТ':A.cls===2?'расширенный':'нежелательный';
+  const axT=(nm,A,un)=>`<p><b>Ось ${nm}:</b> 1 см = <b>${nf(A.u)}</b> ${un} — ${kind(A)}; длина оси ${A.n} см; начало оси ${nf(A.a)}, конец ${nf(A.z)}; метки каждые ${String(A.c).replace(".",",")} см (шаг ${nf(A.T)}), подписанных делений ${A.lab}${A.lab<6?' <span class="bad">(меньше 6 — при такой длине оси и допустимых масштабах больше не получается)</span>':''}.</p>`;
+  let h=axT('x',AX,uX)+axT('y',AY,uY);
+  h+=`<p class="msg">Масштаб: амплитуда по оси делится на доступную длину оси, результат округляется вверх до ближайшего значения из ряда ГОСТ 2.302-68 (1, 2, 5, иногда 2,5 и 4 на 1 см).${(g.scl||'ext')==='gost'?' Выбран масштаб только по ГОСТ: другие значения не используются.':''}${extUsed==='ext'?' <b>Область точек со стандартным рядом занимала бы меньше половины сетки, поэтому использован расширенный ряд (1,25; 1,6; 8 — произведения степеней 2 и 5).</b>':''}${extUsed==='bad'?' <b>Даже расширенный ряд не дал половины сетки, поэтому использован нежелательный масштаб (включая 1,5): уточните у преподавателя, допустим ли он.</b>':''}</p>`;
+  {const P_=SR.flatMap(r=>r.D);
+   if(P_.length){const x0=Math.min(...P_.map(p=>p.x-p.dx)),x1=Math.max(...P_.map(p=>p.x+p.dx)),y0=Math.min(...P_.map(p=>p.y-p.dy)),y1=Math.max(...P_.map(p=>p.y+p.dy));
+    const wc=(x1-x0)/AX.u,hc=(y1-y0)/AY.u,gridA=SW*SH/100,pc=wc*hc/gridA*100,okS=pc>=50;
+    h+=`<p>Область точек на листе: ${nf(+wc.toFixed(1))} × ${nf(+hc.toFixed(1))} см = ${nf(Math.round(wc*hc))} см² — это ${nf(Math.round(pc))} % площади миллиметровой сетки (${nf(SW/10)} × ${nf(SH/10)} см = ${nf(gridA)} см²). Больше половины сетки: ${okS?'<span class="ok">да ✓</span>':'<span class="bad">нет ✗</span>'}.</p>`}}
+  if(BX&&BY){const P2=planFor(lim(!port),SH,SW);
+   if(1/(P2.AX.u*P2.AY.u)>1.15/(AX.u*AY.u))h+=`<p class="msg">Для ${port?'горизонтальной':'вертикальной'} ориентации масштаб рассчитывается независимо и получился бы крупнее: 1 см = ${nf(P2.AX.u)} по x и ${nf(P2.AY.u)} по y (область точек ≈ ${Math.round(P2.fill*100)} % сетки). Переключите ориентацию.</p>`}
+  const pts_=SR.flatMap(r=>r.D.map(p=>({r,p})));
+  if(pts_.length){const vx=pts_.some(({p})=>p.dx/AX.u*10>=1),vy=pts_.some(({p})=>p.dy/AY.u*10>=1),hx=pts_.some(({p})=>p.dx>0),hy=pts_.some(({p})=>p.dy>0);
+   if((hx&&!vx)||(hy&&!vy))h+=`<p class="bad">Погрешности по оси ${[hx&&!vx?'x':'',hy&&!vy?'y':''].filter(Boolean).join(' и ')} на листе короче 1 мм и не видны. По методичке это значит, что масштаб выбран неверно (исключение — градуировочные графики).</p>`;
+   h+=`<button class="calcb" data-k="mm">${calcOpen.mm?'Скрыть координаты точек':'Показать координаты точек на листе'}</button>`;
+   if(calcOpen.mm){h+=`<div class="calc"><p>Расстояния в мм от левого нижнего угла поля графика (начала осей шкал); Δ — половина длины отрезка погрешности.</p><table class="ct"><thead><tr><th>Ряд</th><th>№</th><th>x, мм</th><th>y, мм</th><th>Δx, мм</th><th>Δy, мм</th></tr></thead><tbody>`;
+    pts_.slice(0,300).forEach(({r,p})=>{h+=`<tr><td>${esc(r.name)}</td><td>${p.n}</td><td>${nf(+mm(p.x,AX).toFixed(1))}</td><td>${nf(+mm(p.y,AY).toFixed(1))}</td><td>${nf(+(p.dx/AX.u*10).toFixed(1))}</td><td>${nf(+(p.dy/AY.u*10).toFixed(1))}</td></tr>`});h+='</tbody></table></div>'}}
+  $('paperBox').innerHTML=h}
+}
+// ---- обмен: код (сжатый JSON в base64) и файл .json ----
+const b64=u=>{let t='';for(let i=0;i<u.length;i+=8192)t+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(t).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')};
+const unb64=t=>{t=t.replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';const q=atob(t),u=new Uint8Array(q.length);for(let i=0;i<q.length;i++)u[i]=q.charCodeAt(i);return u};
+const pipe=async(S,u)=>{const w=S.writable.getWriter();w.write(u);w.close();return new Uint8Array(await new Response(S.readable).arrayBuffer())};
+async function encode(obj){const raw=new TextEncoder().encode(JSON.stringify(obj));let z=null;try{z=await pipe(new CompressionStream('deflate-raw'),raw)}catch(e){}return z?'LG1.'+b64(z):'LG0.'+b64(raw)}
+async function decode(code){const m=code.trim().replace(/\s+/g,'').match(/^LG([01])\.(.+)$/);if(!m)throw 0;let u=unb64(m[2]);if(m[1]==='1')u=await pipe(new DecompressionStream('deflate-raw'),u);return JSON.parse(new TextDecoder().decode(u))}
+const xmsg=t=>{$('xmsg').textContent=t};
+async function importText(t){t=t.trim();const o=(t[0]==='{'||t[0]==='[')?JSON.parse(t):await decode(t);
+ const arr=Array.isArray(o)?o:Array.isArray(o.graphs)?o.graphs:(o.ser||o.pts)?[o]:null;if(!arr||!arr.length)throw 0;
+ save();const add=arr.slice(0,30).map(normG),first=G.length;G.push(...add);go(first);return add.length}
+$('exC').onclick=async()=>{save();try{const code=await encode({app:'lab-graph',version:2,graphs:[G[cur]]});$('code').value=code;
+ try{await navigator.clipboard.writeText(code);xmsg('Код скопирован. Отправьте его любым мессенджером: получатель вставит его в поле ниже.')}catch(e){$('code').select();xmsg('Код готов — выделите его и скопируйте.')}}catch(e){xmsg('Не удалось сформировать код.')}};
+$('exF').onclick=()=>{save();try{const b=new Blob([JSON.stringify({app:'lab-graph',version:2,graphs:G},null,1)],{type:'application/json'}),a=document.createElement('a');
+ a.href=URL.createObjectURL(b);a.download='lab-graph-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();xmsg('Если файл не скачался, воспользуйтесь кодом.')}catch(e){xmsg('Файл не удалось создать — воспользуйтесь кодом.')}};
+$('imC').onclick=async()=>{try{const n=await importText($('code').value);xmsg('Добавлено графиков: '+n+'.')}catch(e){xmsg('Не удалось прочитать код. Проверьте, что он вставлен полностью.')}};
+$('imF').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const n=await importText(await f.text());xmsg('Из файла добавлено графиков: '+n+'.')}catch(err){xmsg('Не удалось прочитать файл.')}e.target.value=''};
+// ---- сохранение PNG / PDF (размер листа 28,5 × 20 см, 300 dpi) ----
+$('res').addEventListener('click',e=>{const b=e.target.closest('button[data-k]');if(b){calcOpen[b.dataset.k]=!calcOpen[b.dataset.k];draw()}});
+$('paperBox').addEventListener('click',e=>{const b=e.target.closest('button[data-k]');if(b){calcOpen[b.dataset.k]=!calcOpen[b.dataset.k];draw()}});
+const emsg=t=>{$('exmsg').textContent=t},EXNOTE='Если загрузка не началась, откройте программу по обычной ссылке с хостинга: из окна Claude скачивание файлов может быть заблокировано.';
+function svgCanvas(){const svg=$('svg'),vb=svg.viewBox.baseVal,k=285/900,sc=(300/25.4)*k,w=Math.round(vb.width*sc),h=Math.round(vb.height*sc);
+ const c=svg.cloneNode(true);c.setAttribute('width',w);c.setAttribute('height',h);c.setAttribute('font-family','Arial,Helvetica,sans-serif');
+ const url='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(c));
+ return new Promise((ok,no)=>{const im=new Image();im.onload=()=>{const cv=document.createElement('canvas');cv.width=w;cv.height=h;const x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(im,0,0,w,h);ok({cv,w,h,mmW:vb.width*k,mmH:vb.height*k})};im.onerror=no;im.src=url})}
+function saveBlob(b,name){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+function makePdf(jpg,w,h,mmW,mmH){const enc=new TextEncoder(),pw=(mmW*72/25.4).toFixed(2),ph=(mmH*72/25.4).toFixed(2),parts=[],off=[];let len=0;
+ const add=x=>{const u=typeof x==='string'?enc.encode(x):x;parts.push(u);len+=u.length},obj=(n,body)=>{off[n]=len;add(n+' 0 obj\n'+body+'\nendobj\n')};
+ add('%PDF-1.4\n');obj(1,'<</Type/Catalog/Pages 2 0 R>>');obj(2,'<</Type/Pages/Kids[3 0 R]/Count 1>>');
+ obj(3,`<</Type/Page/Parent 2 0 R/MediaBox[0 0 ${pw} ${ph}]/Resources<</XObject<</Im0 4 0 R>>>>/Contents 5 0 R>>`);
+ off[4]=len;add(`4 0 obj\n<</Type/XObject/Subtype/Image/Width ${w}/Height ${h}/ColorSpace/DeviceRGB/BitsPerComponent 8/Filter/DCTDecode/Length ${jpg.length}>>\nstream\n`);add(jpg);add('\nendstream\nendobj\n');
+ const cs=`q ${pw} 0 0 ${ph} 0 0 cm /Im0 Do Q`;obj(5,`<</Length ${cs.length}>>\nstream\n${cs}\nendstream`);
+ const xr=len;add('xref\n0 6\n0000000000 65535 f \n');for(let i=1;i<=5;i++)add(String(off[i]).padStart(10,'0')+' 00000 n \n');
+ add(`trailer\n<</Size 6/Root 1 0 R>>\nstartxref\n${xr}\n%%EOF`);
+ const out=new Uint8Array(len);let p=0;parts.forEach(u=>{out.set(u,p);p+=u.length});return out}
+$('exSVG').onclick=()=>{try{const svg=$('svg'),vb=svg.viewBox.baseVal,k=285/900,c=svg.cloneNode(true);
+ c.setAttribute('xmlns','http://www.w3.org/2000/svg');c.setAttribute('width',(vb.width*k).toFixed(1)+'mm');c.setAttribute('height',(vb.height*k).toFixed(1)+'mm');c.removeAttribute('style');
+ saveBlob(new Blob(['<?xml version="1.0" encoding="UTF-8"?>\n'+new XMLSerializer().serializeToString(c)],{type:'image/svg+xml'}),'grafik.svg');emsg('SVG готов (размер '+(vb.width*k).toFixed(0)+' × '+(vb.height*k).toFixed(0)+' мм). '+EXNOTE)}catch(e){emsg('Не удалось создать SVG.')}};
+$('exPNG').onclick=async()=>{try{emsg('Готовлю PNG…');const r=await svgCanvas(),b=await new Promise(q=>r.cv.toBlob(q,'image/png'));saveBlob(b,'grafik.png');emsg('PNG готов. '+EXNOTE)}catch(e){emsg('Не удалось создать PNG.')}};
+$('exPDF').onclick=async()=>{try{emsg('Готовлю PDF…');const r=await svgCanvas(),b=await new Promise(q=>r.cv.toBlob(q,'image/jpeg',.95)),u=new Uint8Array(await b.arrayBuffer());
+ saveBlob(new Blob([makePdf(u,r.w,r.h,r.mmW,r.mmH)],{type:'application/pdf'}),'grafik.pdf');emsg('PDF готов (страница '+r.mmW.toFixed(0)+' × '+r.mmH.toFixed(0)+' мм). '+EXNOTE)}catch(e){emsg('Не удалось создать PDF.')}};
+document.querySelectorAll('.card input,.card textarea').forEach(i=>{if(i.closest('#tb')||i.type==='file'||i.id==='code')return;const h=()=>{save();renderChips();draw()};i.addEventListener('input',h);i.addEventListener('change',h)});
+try{const d=JSON.parse(localStorage.getItem('lgv2')||localStorage.getItem('lgv1')||'null');
+ if(d&&Array.isArray(d.G)&&d.G.length){G=d.G.slice(0,30).map(normG);cur=Math.min(Math.max(d.cur|0,0),G.length-1)}}catch(e){}
+refresh();
+if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body></html>
